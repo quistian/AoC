@@ -21,7 +21,7 @@ def within_bounds(v):
 
 
 def main():
-    inf = '02a.reports'
+    inf = './02.reports'
     p = Path(inf)
     with p.open() as fd:
         lines = [line.rstrip() for line in fd]
