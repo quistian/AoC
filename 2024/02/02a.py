@@ -7,19 +7,29 @@ from rich import print
 Debug = False
 Debug = True
 
-def diffs(v):
+def diffs(r):
     dfs = []
-    for i,j in pairwise(v):
-        dfs.append(int(j) - int(i))
+    for i,j in pairwise(r):
+        dfs.append(j - i)
     return dfs
 
-def asc_or_desc(v):
-    all_neg = all(i < 0 for i in v)
-    all_pos = all(i > 0 for i in v)
-    return all_neg or all_pos
+def asc_or_desc(r):
+    return is_asc(r) or is_desc(r)
 
-def within_bounds(v):
-    return all(abs(i) < 4 and abs(i) > 0 for i in v)
+def is_asc(r):
+    d = diffs(r)
+    return all(i > 0 for i in d)
+
+def is_desc(r):
+    d = diffs(r)
+    return all(i < 0 for i in d)
+
+def within_bounds(r):
+    d = diffs(r)
+    return all(abs(i) < 4 and abs(i) > 0 for i in d)
+
+def is_safe(r):
+    return asc_or_desc(r) and within_bounds(r)
 
 
 def main():
@@ -30,12 +40,12 @@ def main():
         cnt = 0
         for line in lines:
             toks = line.split(' ')
-            dfs = diffs(toks)
-            good = asc_or_desc(dfs) and within_bounds(dfs)
+            report = [int(t) for t in toks]
+            good = asc_or_desc(report) and within_bounds(report)
             if good:
                 cnt += 1
                 if Debug:
-                    print('good:',toks, dfs)
+                    print('good:',report, diffs(report))
         print(cnt)
 
 if __name__ == '__main__':

@@ -4,6 +4,9 @@ from pathlib import Path
 from itertools import pairwise, dropwhile, filterfalse
 from rich import print
 
+Debug = True
+Debug = False
+
 
 def diffs(v):
     dfs = []
