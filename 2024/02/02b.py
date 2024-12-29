@@ -7,46 +7,37 @@ from rich import print
 Debug = True
 Debug = False
 
-
-def diffs(v):
+def diffs(r):
     dfs = []
-    for i,j in pairwise(v):
-        dfs.append(int(j) - int(i))
+    for i,j in pairwise(r):
+        dfs.append(j - i)
     return dfs
 
+def asc_or_desc(r):
+    return is_asc(r) or is_desc(r)
 
-def asc_or_desc(v):
-    return is_asc(v) or is_desc(v)
+def is_asc(r):
+    d = diffs(r)
+    return all(i > 0 for i in d)
 
+def is_desc(r):
+    d = diffs(r)
+    return all(i < 0 for i in d)
 
-def within_bounds(v):
-    return all(abs(i) < 4 and abs(i) > 0 for i in v)
+def within_bounds(r):
+    d = diffs(r)
+    return all(abs(i) < 4 and abs(i) > 0 for i in d)
 
-def is_asc(v):
-    return all(i>0 for i in v)
+def is_safe(r):
+    return asc_or_desc(r) and within_bounds(r)
 
-def is_desc(v):
-    return all(i<0 for i in v)
-    
-def is_safe(v):
-    return asc_or_desc(v) and within_bounds(v)
-
-def is_safe_save_one(v):
-    cnt = 0
-    for i in range(len(v)-2):
-       tmp = v.copy()
-       tmp.pop(i)
-       if is_safe(tmp):
-           cnt += 1
-    tmp = v.copy()
-    tmp.pop()
-    if is_safe(tmp):
-        cnt += 1
-    if cnt == 1:
-        return True
-    else:
-        return False
-
+def is_safe_with_removal(r):
+    for i in range(len(r)):
+        tmp = r.copy()
+        del tmp[i]
+        if is_safe(tmp):
+            return True
+    return False
 
 def main():
     fname = '02.reports'
@@ -59,12 +50,12 @@ def main():
         cnt2 = 0
         for line in lines:
             toks = line.split(' ')
-            dfs = diffs(toks)
-            if is_safe(dfs):
+            report = [int(t) for t in toks]
+            if is_safe(report):
                 cnt1 += 1
-            elif is_safe_save_one(dfs):
+            elif is_safe_with_removal(report):
                 cnt2 += 1
-        print(cnt1, cnt2, cnt1 + cnt2)
+    print(cnt1, cnt2, cnt1+cnt2)
 
 
 if __name__ == '__main__':
