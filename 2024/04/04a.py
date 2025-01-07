@@ -7,20 +7,9 @@ from pathlib import Path
 
 import numpy as np
 
-def cnt_overlapping(target, sstr):
-    cnt = 0
-    idx = 0
-    for i in range(len(sstr)):
-        i = sstr.find(target, idx)
-        if i > 0:
-            idx = i + 1
-            cnt += 1
-        else:
-            break
-    return cnt
-
 def cnt_non_overlapping(target, sstr):
     return len(re.findall(target, sstr))
+
 
 def cnt_fwd_rev(target, sstr):
     return cnt_non_overlapping(target, sstr) + cnt_non_overlapping(target, sstr[::-1])

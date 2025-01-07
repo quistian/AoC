@@ -7,26 +7,30 @@ from pathlib import Path
 
 import numpy as np
 
-def cnt_non_overlapping(target, sstr):
-    return len(re.findall(target, sstr))
+def get_square(m,r,c):
+    return(m[r:r+3, c:c+3])
 
-def cnt_fwd_rev(target, sstr):
-    return cnt_non_overlapping(target, sstr) + cnt_non_overlapping(target, sstr[::-1])
+def get_diag(m):
+    return "".join([m[0,0], m[1,1], m[2,2]])
 
+def get_anti_diag(m):
+    return "".join([m[2,0], m[1,1], m[0,2]])
 
-def get_column(idx, array):
-    colstr = ""
-    for row in range(len(array[0])):
-        colstr += array[row][idx]
-    return colstr
-
+def is_x_mas(m):
+    diag = get_diag(m)
+    anti = get_anti_diag(m)
+    if diag == 'MAS':
+        if anti == 'SAM' or anti == 'MAS':
+            return True
+    elif diag == 'SAM':
+        if anti == 'MAS' or anti == 'SAM':
+            return True
+    return False
 
 def main():
     """ AoC 2024 Day 4 Part b. """
     inf = "04.input"
-    word = 'XMAS'
     matrix = []
-    lines = []
     cnt = 0
     f = Path(inf)
     if f.exists() and f.is_file():
@@ -34,34 +38,15 @@ def main():
             lls = fd.readlines()
             for ll in lls:
                 l = ll.strip()
-                lines.append(l)
                 matrix.append(list(l))
     a = np.array(matrix)
-    b = np.fliplr(a)
     (h, w) = a.shape
-    for l in lines: # cnt the XMAS strings in the rows
-        cnt += cnt_fwd_rev(word, l)
-    for r in range(h): # cnt the XMAS strings in the columns
-        col = ''.join(a[0:,r])
-        cnt += cnt_fwd_rev(word, col)
-    diag = ''.join(a.diagonal()) # main diagonals
-    cnt += cnt_fwd_rev(word, diag)
-    diag = ''.join(b.diagonal()) # main diagonals
-    cnt += cnt_fwd_rev(word, diag)
-    for o in range(1, w - len(word) + 1): # both diagonals
-        diag = ''.join(a.diagonal(o)) # upper diagonal
-        cnt += cnt_fwd_rev(word, diag)
-        diag = ''.join(a.diagonal(-o)) # lower diagonal
-        cnt += cnt_fwd_rev(word, diag)
-        diag = ''.join(b.diagonal(o)) # upper diagonal
-        cnt += cnt_fwd_rev(word, diag)
-        diag = ''.join(b.diagonal(-o)) # lower diagonal
-        cnt += cnt_fwd_rev(word, diag)
-    print('row,col,upper diag',cnt)
-
-    
-
-    exit()
+    for r in range(0,h-2):
+        for c in range(0,w-2):
+            b = get_square(a,r,c)
+            if is_x_mas(b):
+                cnt += 1
+    print(b,cnt)
 
 if __name__ == '__main__':
     main()
